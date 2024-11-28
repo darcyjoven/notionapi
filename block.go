@@ -601,6 +601,7 @@ type BlockFile struct {
 	Type     FileType    `json:"type"`
 	File     *FileObject `json:"file,omitempty"`
 	External *FileObject `json:"external,omitempty"`
+	Name     string      `json:"namne,omitempty"`
 }
 
 type PdfBlock struct {
