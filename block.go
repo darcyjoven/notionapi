@@ -808,6 +808,8 @@ func decodeBlock(raw map[string]interface{}) (Block, error) {
 		b = &VideoBlock{}
 	case BlockTypeFile:
 		b = &FileBlock{}
+	case BlockTypeAudio:
+		b = &AudioBlock{}
 	case BlockTypePdf:
 		b = &PdfBlock{}
 	case BlockTypeBookmark:
