@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -18,6 +19,7 @@ func (pID PageID) String() string {
 type PageService interface {
 	Create(context.Context, *PageCreateRequest) (*Page, error)
 	Get(context.Context, PageID) (*Page, error)
+	GetProp(context.Context, PageID, PropertyID) (*Property, error)
 	Update(context.Context, PageID, *PageUpdateRequest) (*Page, error)
 }
 
@@ -96,6 +98,21 @@ func (pc *PageClient) Get(ctx context.Context, id PageID) (*Page, error) {
 	}()
 
 	return handlePageResponse(res)
+}
+
+func (pc *PageClient) GetProp(ctx context.Context, pageId PageID, propId PropertyID) (*Property, error) {
+	res, err := pc.apiClient.request(ctx, http.MethodGet,
+		fmt.Sprintf("pages/%s/properties/%s", pageId.String(), propId.String()), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if errClose := res.Body.Close(); errClose != nil {
+			log.Println("failed to close body, should never happen")
+		}
+	}()
+	return handleProppertyResponse(res)
 }
 
 // Updates the properties of a page in a database. The properties body param of
@@ -190,5 +207,26 @@ func handlePageResponse(res *http.Response) (*Page, error) {
 		return nil, err
 	}
 
+	return &response, nil
+}
+
+func handleProppertyResponse(res *http.Response) (*Property, error) {
+	var response Property
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	// 关闭响应体
+	defer res.Body.Close()
+	var raw map[string]interface{}
+	err = json.Unmarshal(body, &raw)
+	if err != nil {
+		return nil, err
+	}
+	response, err = decodeProperty(raw)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &response)
 	return &response, nil
 }
