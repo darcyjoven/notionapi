@@ -61,13 +61,18 @@ type TemplateMention struct {
 	TemplateMentionDate string              `json:"template_mention_date,omitempty"`
 }
 
+type LinkPreviewMention struct {
+	URL string `json:"url"`
+}
+
 type Mention struct {
-	Type            MentionType      `json:"type,omitempty"`
-	Database        *DatabaseMention `json:"database,omitempty"`
-	Page            *PageMention     `json:"page,omitempty"`
-	User            *User            `json:"user,omitempty"`
-	Date            *DateObject      `json:"date,omitempty"`
-	TemplateMention *TemplateMention `json:"template_mention,omitempty"`
+	Type            MentionType         `json:"type,omitempty"`
+	Database        *DatabaseMention    `json:"database,omitempty"`
+	Page            *PageMention        `json:"page,omitempty"`
+	User            *User               `json:"user,omitempty"`
+	Date            *DateObject         `json:"date,omitempty"`
+	TemplateMention *TemplateMention    `json:"template_mention,omitempty"`
+	LinkPreview     *LinkPreviewMention `json:"link_preview,omitempty"`
 }
 
 type RichText struct {

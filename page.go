@@ -19,7 +19,7 @@ func (pID PageID) String() string {
 type PageService interface {
 	Create(context.Context, *PageCreateRequest) (*Page, error)
 	Get(context.Context, PageID) (*Page, error)
-	GetProp(context.Context, PageID, PropertyID) (*Property, error)
+	GetProp(context.Context, PageID, PropertyID) (Property, error)
 	Update(context.Context, PageID, *PageUpdateRequest) (*Page, error)
 }
 
@@ -100,7 +100,7 @@ func (pc *PageClient) Get(ctx context.Context, id PageID) (*Page, error) {
 	return handlePageResponse(res)
 }
 
-func (pc *PageClient) GetProp(ctx context.Context, pageId PageID, propId PropertyID) (*Property, error) {
+func (pc *PageClient) GetProp(ctx context.Context, pageId PageID, propId PropertyID) (Property, error) {
 	res, err := pc.apiClient.request(ctx, http.MethodGet,
 		fmt.Sprintf("pages/%s/properties/%s", pageId.String(), propId.String()), nil, nil)
 	if err != nil {
@@ -210,7 +210,7 @@ func handlePageResponse(res *http.Response) (*Page, error) {
 	return &response, nil
 }
 
-func handleProppertyResponse(res *http.Response) (*Property, error) {
+func handleProppertyResponse(res *http.Response) (Property, error) {
 	var response Property
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -228,5 +228,5 @@ func handleProppertyResponse(res *http.Response) (*Property, error) {
 		return nil, err
 	}
 	err = json.Unmarshal(body, &response)
-	return &response, nil
+	return response, nil
 }
